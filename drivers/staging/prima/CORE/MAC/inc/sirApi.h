@@ -2118,6 +2118,7 @@ typedef struct sAniChangeCountryCodeReq
     tANI_U16                msgType;    // message type is same as the request type
     tANI_U16                msgLen;     // length of the entire request
     tANI_U8                 countryCode[WNI_CFG_COUNTRY_CODE_LEN];   //3 char country code
+    tAniBool                countryFromUserSpace;
     void                    *changeCCCallback;
     void                    *pDevContext; //device context
     void                    *pVosContext; //voss context
@@ -2317,6 +2318,14 @@ typedef struct sSirP2PNoaStart
    tANI_U32      status;
    tANI_U32      bssIdx;
 } tSirP2PNoaStart, *tpSirP2PNoaStart;
+
+typedef struct sSirTdlsInd
+{
+   tANI_U16      status;
+   tANI_U16      assocId;
+   tANI_U16      staIdx;
+   tANI_U16      reasonCode;
+} tSirTdlsInd, *tpSirTdlsInd;
 
 typedef struct sSirP2PNoaAttr
 {
@@ -3341,6 +3350,8 @@ typedef struct sSirSmeDelStaSelfRsp
 #define SIR_COEX_IND_TYPE_ENABLE_HB_MONITOR (1)
 #define SIR_COEX_IND_TYPE_SCAN_COMPROMISED (2)
 #define SIR_COEX_IND_TYPE_SCAN_NOT_COMPROMISED (3)
+#define SIR_COEX_IND_TYPE_DISABLE_AGGREGATION_IN_2p4 (4)
+#define SIR_COEX_IND_TYPE_ENABLE_AGGREGATION_IN_2p4 (5)
 
 typedef struct sSirSmeCoexInd
 {
@@ -3874,6 +3885,33 @@ typedef struct sSirTdlsAddStaRsp
     tANI_U8                bcastSig;
     eTdlsAddOper           tdlsAddOper;
 } tSirTdlsAddStaRsp ;
+
+/* TDLS Request struct SME-->PE */
+typedef struct
+{
+    tANI_U16            messageType;   // eWNI_SME_TDLS_LINK_ESTABLISH_REQ
+    tANI_U16            length;
+    tANI_U8             sessionId;     // Session ID
+    tANI_U16            transactionId; // Transaction ID for cmd
+    tANI_U8             uapsdQueues;   // Peer's uapsd Queues Information
+    tANI_U8             maxSp;         // Peer's Supported Maximum Service Period
+    tANI_U8             isBufSta;      // Does Peer Support as Buffer Station.
+    tANI_U8             isResponder;   // Is Peer a responder.
+    tSirMacAddr         bssid;         // For multi-session, for PE to locate peSession ID
+    tSirMacAddr         peerMac;
+}tSirTdlsLinkEstablishReq, *tpSirTdlsLinkEstablishReq;
+
+/* TDLS Request struct SME-->PE */
+typedef struct
+{
+    tANI_U16            messageType;   // eWNI_SME_TDLS_LINK_ESTABLISH_RSP
+    tANI_U16            length;
+    tANI_U8             sessionId;     // Session ID
+    tANI_U16            transactionId; // Transaction ID for cmd
+    tSirResultCodes        statusCode;
+    tSirMacAddr            peerMac;
+}tSirTdlsLinkEstablishReqRsp, *tpSirTdlsLinkEstablishReqRsp;
+
 /* TDLS Request struct SME-->PE */
 typedef struct sSirTdlsDelStaReq
 {
@@ -4119,5 +4157,15 @@ typedef struct sSirWlanExcludeUnencryptParam
     tSirMacAddr     bssId;
 }tSirWlanExcludeUnencryptParam,*tpSirWlanExcludeUnencryptParam;
 #endif
+
+typedef struct sAniHandoffReq
+{
+    // Common for all types are requests
+    tANI_U16  msgType; // message type is same as the request type
+    tANI_U16  msgLen;  // length of the entire request
+    tANI_U8   sessionId;
+    tANI_U8   bssid[WNI_CFG_BSSID_LEN];
+    tANI_U8   channel;
+} tAniHandoffReq, *tpAniHandoffReq;
 
 #endif /* __SIR_API_H */
